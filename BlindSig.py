@@ -29,15 +29,20 @@ class Signer:
     def getPublicKey(self):
         return self.publicKey
     
-    def signMessage(self, message):
-        return pow(message, self.privateKey['d'], self.publicKey['n'])
+    def signMessage(self, message, eligible):
+        if eligible == "y":
+            return pow(message, self.privateKey['d'], self.publicKey['n'])
+        else:
+            return None
         
-    def verifyVoter(self, senderID):
+    def verifyVoter(self, eligible):
         pass
         
  
 class Voter:
-    def __init__(self, n):
+    def __init__(self, n, eligible):
+        self.eligible = eligible
+        
         foundR = False
         while not foundR:
             self.r = random.randint(2, n - 1)
@@ -57,6 +62,9 @@ class Voter:
         
     def getID(self):
         return int(str(self.r)[0:20])
+    
+    def getEligibility(self):
+        return self.eligible
 
 def verifySignature(message, signature, publicE, publicN):
     return (message == pow(signature, publicE, publicN))        

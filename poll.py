@@ -2,6 +2,7 @@ import BlindSig as bs
 import websocket
 import thread
 import time
+import os
 
 class poll:
     def __init__(self):
@@ -11,56 +12,68 @@ class poll:
         self.e = self.publicKey['e']
         
     def begin_poll(self, question):
-        polling = True
         
-        print("Welcome to the Poll!")
-        #print("public mod: ", self.n)
-        #print("public exponent: ", self.e)
-        print("")
-        
+        polling = True       
         
         while(polling):
-            
-            voter_response = raw_input(str(question) + " (y/n): ")
-            if (voter_response.lower() == "y"):
-                voter = bs.Voter(self.n)
-                message = str(1) + str(voter.getID())
-                message = int(message)
-                blindMessage = voter.blindMessage(message, self.n, self.e)
-                ws.send("")
-                ws.send("Blinded message: " + str(blindMessage))
-                signedBlindMessage = self.signer.signMessage(blindMessage)
-                ws.send("")
-                ws.send("Signed blinded message: " + str(signedBlindMessage))
-                signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
-                decodedMessage = pow(signedMessage, self.e, self.n)
-                verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
-                plaintextMessage = str(decodedMessage)[0:1]
-                ws.send("")
-                ws.send("Signature: " + str(signedMessage))
-                ws.send("Decoded message: " + str(plaintextMessage))
-                ws.send("Verification status: " + str(verificationStatus))
-            elif (voter_response.lower() == "n"):
-                voter = bs.Voter(self.n)
-                message = str(2) + str(voter.getID())
-                message = int(message)
-                blindMessage = voter.blindMessage(message, self.n, self.e)
-                ws.send("")
-                ws.send("Blinded message: " + str(blindMessage))
-                signedBlindMessage = self.signer.signMessage(blindMessage)
-                ws.send("")
-                ws.send("Signed blinded message: " + str(signedBlindMessage))
-                signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
-                decodedMessage = pow(signedMessage, self.e, self.n)
-                verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
-                plaintextMessage = str(decodedMessage)[0:1]
-                ws.send("")
-                ws.send("Signature: " + str(signedMessage))
-                ws.send("Decoded message: " + str(plaintextMessage))
-                ws.send("Verification status: " + str(verificationStatus))
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("Welcome to the Poll!")
+            print("")
+            voter_response_1 = raw_input(str(question) + " (y/n): ")
+            voter_response_2 = raw_input("Are you an eligible voter (y/n): ")
+            voter_response_3 = raw_input("Submit now (y/n): ")
+            if (voter_response_3.lower() == "y"):
+                if (voter_response_1.lower() == "y"):
+                    voter = bs.Voter(self.n, voter_response_2.lower())
+                    message = str(1) + str(voter.getID())
+                    message = int(message)
+                    blindMessage = voter.blindMessage(message, self.n, self.e)
+                    ws.send("Blinded message: " + str(blindMessage))
+                    signedBlindMessage = self.signer.signMessage(blindMessage, voter.getEligibility())
+                    if signedBlindMessage == None:
+                        ws.send("INELIGIBLE VOTER....VOTE NOT AUTHORIZED!")
+                        print("")
+                        print("ERROR INELIGIBLE VOTER!")
+                    else:
+                        ws.send("Signed blinded message: " + str(signedBlindMessage))
+                        signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
+                        decodedMessage = pow(signedMessage, self.e, self.n)
+                        verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
+                        plaintextMessage = str(decodedMessage)[0:1]
+                        ws.send("Signature: " + str(signedMessage))
+                        ws.send("Decoded message: " + str(plaintextMessage))
+                        ws.send("Verification status: " + str(verificationStatus))
+                        print("")
+                        print("Thanks your vote has been submitted!")
+                elif (voter_response_1.lower() == "n"):
+                    voter = bs.Voter(self.n, voter_response_2.lower())
+                    message = str(2) + str(voter.getID())
+                    message = int(message)
+                    blindMessage = voter.blindMessage(message, self.n, self.e)
+                    ws.send("Blinded message: " + str(blindMessage))
+                    signedBlindMessage = self.signer.signMessage(blindMessage, voter.getEligibility())
+                    if signedBlindMessage == None:
+                        print("")
+                        ws.send("INELIGIBLE VOTER....VOTE NOT AUTHORIZED!")
+                        print("ERROR INELIGIBLE VOTER!")
+                    else:
+                        ws.send("Signed blinded message: " + str(signedBlindMessage))
+                        signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
+                        decodedMessage = pow(signedMessage, self.e, self.n)
+                        verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
+                        plaintextMessage = str(decodedMessage)[0:1]
+                        ws.send("Signature: " + str(signedMessage))
+                        ws.send("Decoded message: " + str(plaintextMessage))
+                        ws.send("Verification status: " + str(verificationStatus))
+                        print("")
+                        print("Thanks your vote has been submitted!")
             else:
                 polling = False
-                
+            
+            
+            time.sleep(3)
+        print("")
+        print("SYSTEM CLOSING...")     
         ws.close() 
       
 
