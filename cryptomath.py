@@ -134,45 +134,6 @@ def modularSqrt(a, p):
         return pow(a, (p + 1) // 4, p)
     return None
 
-def ellipticCurveAddition(curve, p, points):
-    # Adds the points on the given curve over the field F_p.
-    # The curve y^2 = x^3 + ax + b is specified by the list [a,b].
-    # Individual points are specified as a list [x,y] or as the string 'O'.
-    a, b = curve
-    P, Q = points
-    if P == 'O':
-        return Q
-    if Q == 'O':
-        return P
-    x1, y1 = P
-    x2, y2 = Q
-    if (x1 - x2) % p == 0 and (y1 + y2) % p == 0:
-        return 'O'
-    if P == Q:
-        scalarNum = (3*x1**2 + a) % p
-        scalarDen = 2*y1 % p
-    else:
-        scalarNum = (y2 - y1) % p
-        scalarDen = (x2 - x1) % p
-    scalar = (scalarNum*findModInverse(scalarDen, p)) % p
-    x3 = (scalar**2 - x1 - x2) % p
-    y3 = (scalar*(x1 - x3) - y1) % p
-    return [x3,y3]
-
-    
-def ellipticCurveMultiplication(curve, p, P, n):
-    # Returns n*P, where n is a positive integer and P is a point on the curve.
-    bits = base_b_digits(n, 2)
-    Q = P
-    P_multiples = [P]
-    for i in range(len(bits) - 1):
-        Q = ellipticCurveAddition(curve, p, [Q, Q])
-        P_multiples.append(Q)
-    R = 'O'
-    for i in range(len(bits)):
-        if bits[i] == 1:
-            R = ellipticCurveAddition(curve, p, [R, P_multiples[i]])
-    return R
 
     
     
