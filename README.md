@@ -8,5 +8,5 @@ For my final cryptography project regarding digital signatures, I implemeneted t
 Poll Listner = ws_app.py<br>
 Poll Booth (GUI) = electionPoll.py<br>
 Poll Booth (command line) = poll.py<br>
-
+<br>
 **** You may need to install some modules suchs as websocket. This may be installed by: pip install websocket. ****
