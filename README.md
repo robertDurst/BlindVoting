@@ -4,7 +4,7 @@
 
 For my final cryptography project regarding digital signatures, I implemeneted the blind digital signature voting scheme described by David Chaum in his <a href=http://sceweb.sce.uhcl.edu/yang/teaching/csci5234WebSecurityFall2011/Chaum-blind-signatures.PDF>paper </a>. If you are interested in how I implemented this scheme, I describe my approach in this <a href=https://steemit.com/cryptography/@robertdurst10/blind-digital-signature-voting-scheme-implementation>article.</a> 
 
-<h1> To RUN: </h1>
+<h2> To RUN: </h2>
 Poll Listner = ws_app.py
 Poll Booth (GUI) = electionPoll.py
 Poll Booth (command line) = poll.py
