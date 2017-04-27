@@ -1,4 +1,4 @@
-import cryptomath, random
+import cryptomath, random, hashlib
 
 class Signer:
     
@@ -67,6 +67,6 @@ class Voter:
         return self.eligible
 
 def verifySignature(message, signature, publicE, publicN):
-    return (message == pow(signature, publicE, publicN))        
+    return (int(hashlib.sha256(message).hexdigest(),16) == pow(signature, publicE, publicN))        
         
 

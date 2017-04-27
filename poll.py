@@ -3,6 +3,7 @@ import websocket
 import thread
 import time
 import os
+import hashlib
 
 class poll:
     def __init__(self):
@@ -26,8 +27,10 @@ class poll:
                 if (voter_response_1.lower() == "y"):
                     voter = bs.Voter(self.n, voter_response_2.lower())
                     message = str(1) + str(voter.getID())
-                    message = int(message)
-                    blindMessage = voter.blindMessage(message, self.n, self.e)
+                    message_hash = hashlib.sha256(message).hexdigest()
+                    print(message_hash)
+                    message_hash = int(message_hash,16)
+                    blindMessage = voter.blindMessage(message_hash, self.n, self.e)
                     ws.send("Blinded message: " + str(blindMessage))
                     signedBlindMessage = self.signer.signMessage(blindMessage, voter.getEligibility())
                     if signedBlindMessage == None:
@@ -37,33 +40,35 @@ class poll:
                     else:
                         ws.send("Signed blinded message: " + str(signedBlindMessage))
                         signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
-                        decodedMessage = pow(signedMessage, self.e, self.n)
-                        verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
-                        plaintextMessage = str(decodedMessage)[0:1]
+                        decodedMessage = str(message)[0]
+                        verificationStatus = bs.verifySignature(message, signedMessage, self.e, self.n)
                         ws.send("Signature: " + str(signedMessage))
-                        ws.send("Decoded message: " + str(plaintextMessage))
+                        ws.send("Decoded message: " + str(decodedMessage))
+                        ws.send("Hashed message: " + str(hashlib.sha256(message).hexdigest()))
                         ws.send("Verification status: " + str(verificationStatus))
                         print("")
                         print("Thanks your vote has been submitted!")
                 elif (voter_response_1.lower() == "n"):
                     voter = bs.Voter(self.n, voter_response_2.lower())
-                    message = str(2) + str(voter.getID())
-                    message = int(message)
-                    blindMessage = voter.blindMessage(message, self.n, self.e)
+                    message = str(0) + str(voter.getID())
+                    message_hash = hashlib.sha256(message).hexdigest()
+                    print(message_hash)
+                    message_hash = int(message_hash,16)
+                    blindMessage = voter.blindMessage(message_hash, self.n, self.e)
                     ws.send("Blinded message: " + str(blindMessage))
                     signedBlindMessage = self.signer.signMessage(blindMessage, voter.getEligibility())
                     if signedBlindMessage == None:
-                        print("")
                         ws.send("INELIGIBLE VOTER....VOTE NOT AUTHORIZED!")
+                        print("")
                         print("ERROR INELIGIBLE VOTER!")
                     else:
                         ws.send("Signed blinded message: " + str(signedBlindMessage))
                         signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
-                        decodedMessage = pow(signedMessage, self.e, self.n)
-                        verificationStatus = bs.verifySignature(decodedMessage, signedMessage, self.e, self.n)
-                        plaintextMessage = str(decodedMessage)[0:1]
+                        decodedMessage = str(message)[0]
+                        verificationStatus = bs.verifySignature(message, signedMessage, self.e, self.n)
                         ws.send("Signature: " + str(signedMessage))
-                        ws.send("Decoded message: " + str(plaintextMessage))
+                        ws.send("Decoded message: " + str(decodedMessage))
+                        ws.send("Hashed message: " + str(hashlib.sha256(message).hexdigest()))
                         ws.send("Verification status: " + str(verificationStatus))
                         print("")
                         print("Thanks your vote has been submitted!")
