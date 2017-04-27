@@ -1,4 +1,4 @@
-<center># Blind Digital Signature Voting Scheme RSA Implementation in Python</center>
+# Blind Digital Signature Voting Scheme RSA Implementation in Python
 
 <img src=https://cloud.githubusercontent.com/assets/16689974/25491602/748308da-2b3e-11e7-898e-d928565479c5.gif>
 
