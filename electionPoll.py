@@ -5,6 +5,7 @@ import time
 import os
 import hashlib
 from tkinter import *
+import random
 
 class poll:
     def __init__(self, ws):
@@ -20,9 +21,12 @@ class poll:
        if (eligble_answer == 0): eligble_answer = "n";
        if (eligble_answer == 1): eligble_answer = "y";
        
+       l = random.randint(1,self.n)
+       message = poll_answer
+       concat_message = str(message) + str(l)
+       
        voter = bs.Voter(self.n, eligble_answer)
-       message = str(poll_answer) + str(voter.getID())
-       message_hash = hashlib.sha256(message).hexdigest()
+       message_hash = hashlib.sha256(concat_message).hexdigest()
        message_hash = int(message_hash,16)
        blindMessage = voter.blindMessage(message_hash, self.n, self.e)
        self.ws.send("Blinded message: " + str(blindMessage))
@@ -32,11 +36,11 @@ class poll:
        else:
            self.ws.send("Signed blinded message: " + str(signedBlindMessage))
            signedMessage = voter.unwrapSignature(signedBlindMessage, self.n)
-           decodedMessage = str(message)[0]
-           verificationStatus = bs.verifySignature(message, signedMessage, self.e, self.n)
+           decodedMessage = str(message)
+           verificationStatus = bs.verifySignature(message, l ,signedMessage, self.e, self.n)
            self.ws.send("Signature: " + str(signedMessage))
            self.ws.send("Decoded message: " + str(decodedMessage))
-           self.ws.send("Hashed message: " + str(hashlib.sha256(message).hexdigest()))
+           self.ws.send("Hashed message: " + str(hashlib.sha256(str(message)+str(l)).hexdigest()))
            self.ws.send("Verification status: " + str(verificationStatus))
        
        

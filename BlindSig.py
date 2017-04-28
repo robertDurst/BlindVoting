@@ -59,14 +59,11 @@ class Voter:
         rInv = cryptomath.findModInverse(self.r, n)
         
         return ((signedBlindMessage * rInv) % n)
-        
-    def getID(self):
-        return int(str(self.r)[0:20])
     
     def getEligibility(self):
         return self.eligible
 
-def verifySignature(message, signature, publicE, publicN):
-    return (int(hashlib.sha256(message).hexdigest(),16) == pow(signature, publicE, publicN))        
+def verifySignature(message, randNum, signature, publicE, publicN):
+    return (int(hashlib.sha256(str(message) + str(randNum)).hexdigest(),16) == pow(signature, publicE, publicN))        
         
 
